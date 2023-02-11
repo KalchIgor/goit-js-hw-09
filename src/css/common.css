@@ -16,19 +16,3 @@ img {
   display: block;
   max-width: 100%;
 }
- a,
- li {
-   text-decoration: none;
-   /* Отменяем подчеркивание у ссылки */
- }
- li {
-   list-style-type: none;
-   /* Убираем маркеры */
-   display: inline-block;
-   width: 200px;
-   border: #212121;
-   border: 1px;
-   border-radius: 5px;
-   padding: 5px;
- }
-
