@@ -1,34 +1,64 @@
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/material_blue.css";
 import Notiflix from 'notiflix';
+//npm i flatpickr
+//npm i notiflix
 
-const text = document.querySelector('#datetime-picker');
-const timerHtml = document.querySelector('.timer');
-const btnStart = document.querySelector('button[data-start]');
-const seconds = document.querySelector('span[data-seconds]');
-const minutes = document.querySelector('span[data-minutes]');
-const hours = document.querySelector('span[data-hours]');
-const days = document.querySelector('span[data-days]');
-
-btnStart.disabled = true;
+const refs = {
+  button:document.querySelector('button'),
+  input:document.querySelector('input#datetime-picker'),
+  timerEl:document.querySelector('.timer'),
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+}
+refs.timerEl.style.display = 'flex';
+refs.button.disabled = true;
+let timeoutID = null;
 
 const options = {
-  enableTime: true,
-  time_24hr: true,
-  defaultDate: new Date(),
-  minuteIncrement: 1,
-  onClose(selectedDates) {
-    if (selectedDates[0] < new Date()) {
-      Notiflix.Notify.failure('Please choose a date in the future');
-      btnStart.disabled = true;
-    } else {
-      btnStart.disabled = false;
+    enableTime: true,
+    time_24hr: true,
+    defaultDate: new Date(),
+    minuteIncrement: 1,
+
+    onClose(selectedDates) {
+    // console.log("selectedDates: ", selectedDates[0])
+    // const defaultDateCalendars = new Date();
+    // console.log("defaultDateCalendars", defaultDateCalendars);
+    // const delta = selectedDates[0].getTime() - defaultDateCalendars.getTime();
+    // console.log(delta);
+    if (selectedDates[0] <= options.defaultDate) {
+      Notiflix.Notify.failure('Please choose a date in the future')
+      refs.button.disabled = true
+    }
+    if (selectedDates[0] >= options.defaultDate) {
+      {
+        refs.button.disabled = false
+      }
     }
   },
+}
+
+const calendar = flatpickr(refs.input, options)
+
+refs.button.addEventListener('click', onButtonClick)
+
+function onButtonClick() {
+  timeoutID = setInterval(() => {
+    updateTime()
+  }, 1000)
+  refs.input.disabled = true
+  refs.button.disabled = true
+}
+
+function ddLeadingZero(value) {
+  return String(value).padStart(2, '0')
 };
 
-flatpickr(text, options);
-
+//Подсчет значений
 function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
@@ -37,42 +67,34 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = ddLeadingZero(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = ddLeadingZero(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = ddLeadingZero(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = ddLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
 
   return { days, hours, minutes, seconds };
 }
 
-function pad(value) {
-  return value.toString().padStart(2, '0');
+
+function updateTime() {
+  const currentTime = new Date()
+  const selectedTime = new Date(refs.input.value)
+
+  const deltaTime = selectedTime - currentTime
+
+  if (deltaTime < 0) {
+    return
+  } else {
+    const { days, hours, minutes, seconds } = convertMs(deltaTime)
+    refs.days.textContent = `${days}`
+    refs.hours.textContent = `${hours}`
+    refs.minutes.textContent = `${minutes}`
+    refs.seconds.textContent = `${seconds}`
+  }
 }
-
-btnStart.addEventListener('click', () => {
-  let timer = setInterval(() => {
-    let countdown = new Date(text.value) - new Date();
-    btnStart.disabled = true;
-    if (countdown >= 0) {
-      let timeObject = convertMs(countdown);
-      days.textContent = pad(timeObject.days);
-      hours.textContent = pad(timeObject.hours);
-      minutes.textContent = pad(timeObject.minutes);
-      seconds.textContent = pad(timeObject.seconds);
-      if (countdown <= 10000) {
-        timerHtml.style.color = 'tomato';
-      }
-    } else {
-      Notiflix.Notify.success('Countdown finished');
-      timerHtml.style.color = 'black';
-      clearInterval(timer);
-    }
-  }, 1000);
-});
-
 
 
 
