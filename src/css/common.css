@@ -15,7 +15,7 @@ body {
       justify-content: center;
       align-items: center;
       padding-top: 20vh;
-      background-color: rgb(28, 148, 196);
+      background-color: rgb(123, 196, 28);
       font-size: 20px;
 }
 
@@ -27,6 +27,9 @@ a {
   text-decoration: none;
 }
 
+ul {
+  list-style: none;
+}
 
 #datetime-picker {
   box-sizing: border-box;
@@ -64,5 +67,6 @@ img {
   font-weight: bold;
   text-transform: uppercase;
 }
+
 
 
