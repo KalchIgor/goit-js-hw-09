@@ -1,4 +1,6 @@
 import Notiflix from 'notiflix';
+import "notiflix/dist/notiflix-3.2.6.min.css";
+
 const delay = document.querySelector('input[name="delay"]');
 const step = document.querySelector('input[name="step"]');
 const amount = document.querySelector('input[name="amount"]');
@@ -37,6 +39,7 @@ btnCreatePromise.addEventListener('click', e => {
       
   }
   form.reset();
+  //e.currentTarget.reset();
 
   
 });
